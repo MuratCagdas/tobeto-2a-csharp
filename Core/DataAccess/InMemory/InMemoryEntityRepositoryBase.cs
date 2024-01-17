@@ -19,6 +19,9 @@ public abstract class InMemoryEntityRepositoryBase<TEntity, TEntityId>
 
     public void Delete(TEntity entity)
     {
+        TEntity delete = _entities.First(b => b.Id.Equals(entity.Id));
+        _entities.Remove(delete);
+ 
         entity.DeletedAt = DateTime.UtcNow;
     }
 
@@ -38,6 +41,10 @@ public abstract class InMemoryEntityRepositoryBase<TEntity, TEntityId>
 
     public void Update(TEntity entity)
     {
+        TEntity update = _entities.First(e => e.Id.Equals(entity.Id));
+        _entities.Remove(update);
+        _entities.Add(entity);
+
         entity.UpdateAt = DateTime.UtcNow;
     }
 }
