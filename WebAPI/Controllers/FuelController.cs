@@ -1,24 +1,23 @@
 ﻿using Business.Abstract;
 using Business.Requests.Fuel;
 using Business.Responses.Fuel;
-using Entities.Concrete;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/[controller]/[Action]")]
 [ApiController]
 public class FuelController : ControllerBase
 {
     private readonly IFuelService _fuelService;
-    public FuelController()
+    public FuelController(IFuelService fuelService)
     {
-        _fuelService = ServiceRegistration.FuelService;
+        _fuelService = fuelService;
     }
     [HttpGet] // GET http://localhost:5245/api/fuel
-    public ICollection<Fuel> GetList()
+    public GetFuelListResponse GetList([FromQuery] GetFuelListRequest request)
     {
-        IList<Fuel> fuelList = _fuelService.GetList();
+        GetFuelListResponse fuelList = _fuelService.GetList(request);
         return fuelList; 
     }
     [HttpGet("{id}")]
@@ -42,9 +41,10 @@ public class FuelController : ControllerBase
         _fuelService.Delete(request);
     }
     [HttpPut]
-    public void Update(UpdateFuelRequest request)
+   public UpdateFuelResponse Update(UpdateFuelRequest request)
     {
-        _fuelService.Update(request);
+        UpdateFuelResponse response =_fuelService.Update(request);
+        return response;
     }
 
 }

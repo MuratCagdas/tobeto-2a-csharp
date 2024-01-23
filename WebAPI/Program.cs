@@ -1,6 +1,16 @@
-var builder = WebApplication.CreateBuilder(args);
+
+using Business.DependencyResolvers;
+using Core.CrossCuttingConcerns.Exceptions;
+
+
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+
+builder.Services.AddBusinessServices();
+
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -15,6 +25,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//Middleware Exception
+app.UseGlobalExceptionHandling();
+
 
 app.UseHttpsRedirection();
 

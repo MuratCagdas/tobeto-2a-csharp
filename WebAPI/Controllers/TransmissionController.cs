@@ -1,9 +1,6 @@
 ﻿using Business.Abstract;
-using Business.Requests.Fuel;
 using Business.Requests.Transmission;
-using Business.Responses.Fuel;
 using Business.Responses.Transmission;
-using Entities.Concrete;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -13,15 +10,17 @@ namespace WebAPI.Controllers;
 public class TransmissionController : ControllerBase
 {
     private readonly ITransmissionService _transmissionService;
-    public TransmissionController()
+    public TransmissionController(ITransmissionService transmissionService )
     {
-        _transmissionService = ServiceRegistration.TransmissionService;
+        _transmissionService = transmissionService;
     }
+
     [HttpGet] // GET http://localhost:5245/api/transmission
     [ActionName("GetList")]
-    public ICollection<Transmission> GetList()
+    public GetTransmissionListResponse GetList([FromQuery] GetTransmissionListRequest request)
     {
-        IList<Transmission> transmissionList = _transmissionService.GetList();
+        GetTransmissionListResponse transmissionList = _transmissionService.GetList(request);
+
         return transmissionList;
     }
 
@@ -35,7 +34,7 @@ public class TransmissionController : ControllerBase
         return CreatedAtAction(nameof(GetList), response);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public GetByIDTransmissionResponse getById(int id)
     {
         GetByIDTransmissionResponse response = _transmissionService.GetById(id);

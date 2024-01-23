@@ -40,7 +40,7 @@ public class BrandManager : IBrandService
         return response;
     }
 
-    public IList<Brand> GetList()
+    public GetBrandListResponse GetList(GetBrandListRequest request)
     {
         // İş Kuralları
         // Validation
@@ -49,6 +49,7 @@ public class BrandManager : IBrandService
         // Transaction
 
         IList<Brand> brandList = _brandDal.GetList();
-        return brandList;
+        GetBrandListResponse response = _mapper.Map<GetBrandListResponse>(brandList);
+        return response;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Business.Abstract;
 using Business.BusinessRules;
+using Business.Dtos.Fuel;
 using Business.Requests.Fuel;
 using Business.Responses.Fuel;
 using DataAccess.Abstract;
@@ -31,10 +32,11 @@ public class FuelManager: IFuelService
         return response;
     }
 
-    public IList<Fuel> GetList()
+    public GetFuelListResponse GetList(GetFuelListRequest request)
     {
         IList<Fuel> fuelList = _fuelDal.GetList();
-        return fuelList;
+        GetFuelListResponse response = _mapper.Map<GetFuelListResponse>(fuelList);
+        return response;
     }
 
     public GetByIDFuelResponse GetById(int id)
@@ -45,16 +47,22 @@ public class FuelManager: IFuelService
 
         return response;
     }
-    public void Delete(DeleteFuelRequest request)
+    public DeleteFuelResponse Delete(DeleteFuelRequest request)
     {
         _fuelBusinessRules.CheckIfFuelExists(request.Id);
         Fuel DeleteFuel = _mapper.Map<Fuel>(request);
         _fuelDal.Delete(DeleteFuel);
+        DeleteFuelResponse response = _mapper.Map<DeleteFuelResponse>(DeleteFuel);
+        return response;
     }
-    public void Update(UpdateFuelRequest request)
+    public UpdateFuelResponse Update(UpdateFuelRequest request)
     {
+       
         _fuelBusinessRules.CheckIfFuelExists(request.Id);
         Fuel UpdateFuel = _mapper.Map<Fuel>(request);
         _fuelDal.Update(UpdateFuel);
+        FuelUpdateDto dto = _mapper.Map<FuelUpdateDto>(UpdateFuel);
+        UpdateFuelResponse response = _mapper.Map<UpdateFuelResponse>(dto);
+        return response;
     }
 }

@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using Business;
+using Business.Abstract;
 using Business.Concrete;
 using Business.Requests.Brand;
 using Business.Responses.Brand;
@@ -16,10 +17,10 @@ public class BrandsController : ControllerBase
 {
     private readonly IBrandService _brandService; // Field
 
-    public BrandsController()
+    public BrandsController(IBrandService brandService)
     {
         // Her HTTP Request için yeni bir Controller nesnesi oluşturulur.
-        _brandService = ServiceRegistration.BrandService;
+        _brandService = brandService;
         // Daha sonra IoC Container yapımızı kurduğumuz Dependency Injection ile daha verimli hale getiricez.
     }
 
@@ -31,10 +32,15 @@ public class BrandsController : ControllerBase
     //}
 
     [HttpGet] // GET http://localhost:5245/api/brands
-    public ICollection<Brand> GetList()
+    //public ICollection<Brand> GetList()
+    //{
+    //    IList<Brand> brandList = _brandService.GetList();
+    //    return brandList; // JSON
+    //}
+    public GetBrandListResponse GetList([FromQuery] GetBrandListRequest request)
     {
-        IList<Brand> brandList = _brandService.GetList();
-        return brandList; // JSON
+        GetBrandListResponse response = _brandService.GetList(request);
+        return response;
     }
 
     //[HttpPost("/add")] // POST http://localhost:5245/api/brands/add

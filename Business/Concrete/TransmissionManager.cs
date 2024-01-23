@@ -2,9 +2,7 @@
 using AutoMapper;
 using Business.Abstract;
 using Business.BusinessRules;
-using Business.Requests.Fuel;
 using Business.Requests.Transmission;
-using Business.Responses.Fuel;
 using Business.Responses.Transmission;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -34,29 +32,35 @@ public class TransmissionManager : ITransmissionService
         return response;
     }
 
-    public IList<Transmission> GetList()
+    public GetTransmissionListResponse GetList(GetTransmissionListRequest request)
     {
         IList<Transmission> transmissionlList = _transmissionDal.GetList();
-        return transmissionlList;
+        GetTransmissionListResponse response = _mapper.Map<GetTransmissionListResponse>(transmissionlList);
+
+        return response;
     }
-    public GetByIDTransmissionResponse GetById(int id)
+    public GetByIDTransmissionResponse GetById(GetByIDTransmissionRequest id)
     {
-        _transmissionBusinessRules.CheckIfFuelExists(id);
-        Transmission? transmission = _transmissionDal.GetList().First<Transmission>(b => b.Id == id);
+        _transmissionBusinessRules.CheckIfFuelExists(id.ID);
+        Transmission? transmission = _transmissionDal.GetList().First<Transmission>(b => b.Id == id.ID);
         GetByIDTransmissionResponse response = _mapper.Map<GetByIDTransmissionResponse>(transmission);
 
         return response;
     }
-    public void Delete(DeleteTransmissionRequest request)
+    public DeleteTransmissionResponse Delete(DeleteTransmissionRequest request)
     {
         _transmissionBusinessRules.CheckIfFuelExists(request.Id);
         Transmission DeleteFuel = _mapper.Map<Transmission>(request);
         _transmissionDal.Delete(DeleteFuel);
+        DeleteTransmissionResponse response = _mapper.Map<DeleteTransmissionResponse>(DeleteFuel);
+        return response;
     }
-    public void Update(UpdateTransmissionRequest request)
+    public UpdateTransmissionResponse Update(UpdateTransmissionRequest request)
     {
         _transmissionBusinessRules.CheckIfFuelExists(request.Id);
         Transmission UpdateFuel = _mapper.Map<Transmission>(request);
-        _transmissionDal.Update(UpdateFuel);
+        Transmission updatedTransmission = _transmissionDal.Update(UpdateFuel);
+        UpdateTransmissionResponse response = _mapper.Map<UpdateTransmissionResponse>(updatedTransmission);
+        return response;
     }
 }

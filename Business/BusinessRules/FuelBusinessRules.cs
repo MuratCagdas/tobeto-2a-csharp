@@ -27,6 +27,5 @@ public class FuelBusinessRules
         {
             throw new Exception("No Fuel");
         }
-  
     }
 }
