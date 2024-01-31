@@ -1,6 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Requests.Car;
 using Business.Responses.Car;
+using Business.Responses.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -22,7 +23,7 @@ public class CarController : ControllerBase
         return fuelList;
     }
     [HttpGet("{id}")]
-    public GetByIDCarResponse getById(GetByIDCarRequest id)
+    public GetByIDCarResponse GetById(GetByIDCarRequest id)
     {
         GetByIDCarResponse response = _carService.GetById(id);
         return response;
@@ -33,20 +34,28 @@ public class CarController : ControllerBase
     public ActionResult<AddCarResponse> Add(AddCarRequest request)
     {
         AddCarResponse response = _carService.Add(request);
+        return CreatedAtAction( // 201 Created
+            actionName: nameof(GetById),
+            routeValues: new { Id = response.Id }, // Anonymous object
+                                                   // Response Header: Location=http://localhost:5245/api/models/1
 
-        return CreatedAtAction(nameof(GetList), response);
+            value: response // Response Body: JSON
+        );
     }
-    //[HttpDelete("{id}")]
-    [HttpDelete]
+   
+    [HttpDelete("{Id}")]
     public DeleteCarResponse Delete(DeletCarRequest request)
     {
         DeleteCarResponse response = _carService.Delete(request);
         return response;
     }
-    [HttpPut]
-    public UpdateCarResponse Update(UpdateCarRequest request)
+    [HttpPut("{Id}")]
+    public ActionResult<UpdateCarResponse>  Update([FromBody]UpdateCarRequest request, [FromRoute] int Id)
     {
+        if (Id != request.Id)
+            return BadRequest();
+
         UpdateCarResponse response = _carService.Update(request);
-        return response;
+        return Ok(response);
     }
 }

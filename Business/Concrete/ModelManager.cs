@@ -1,9 +1,12 @@
 ﻿
 using AutoMapper;
+using Azure.Core;
 using Business.Abstract;
 using Business.BusinessRules;
+using Business.Profiles.Validation.FluentValidation.Model;
 using Business.Requests.Model;
 using Business.Responses.Model;
+using Core.CrossCuttingConcerns.Validation.FluentValidation;
 using DataAccess.Abstract;
 using Entities.Concrete;
 
@@ -24,7 +27,12 @@ public class ModelManager : IModelService
     }
     public AddModelResponse Add(AddModelRequest request)
     {
+        // fluent validation
+        ValidationTool.Validate(new AddModelRequestValidator(), request);
+
+        // business rules
         _modelBusinessRules.CheckIfModelNameExists(request.Name);
+        _modelBusinessRules.CheckIfModelYearShouldBeInLast20Years(request.Year);
 
         // mapping
         var modelToAdd = _mapper.Map<Model>(request);
@@ -39,12 +47,24 @@ public class ModelManager : IModelService
 
     public DeleteModelResponse Delete(DeletModelRequest request)
     {
-        throw new NotImplementedException();
+        Model? modelToDelete = _modelDal.Get(predicate: model => model.Id == request.Id); // 0x123123
+        _modelBusinessRules.CheckIfModelExists(modelToDelete); // 0x123123
+
+        Model deletedModel = _modelDal.Delete(modelToDelete!); // 0x123123
+
+        var response = _mapper.Map<DeleteModelResponse>(
+            deletedModel // 0x123123
+        );
+        return response;
     }
 
-    public GetByIDModelResponse GetById(GetModelByIdRequest id)
+    public GetByIDModelResponse GetById(GetModelByIdRequest request)
     {
-        throw new NotImplementedException();
+        Model? model = _modelDal.Get(predicate: model => model.Id == request.Id);
+        _modelBusinessRules.CheckIfModelExists(model);
+
+        var response = _mapper.Map<GetByIDModelResponse>(model);
+        return response;
     }
 
     public GetModelListResponse GetList(GetModelListRequest request)
@@ -64,6 +84,20 @@ public class ModelManager : IModelService
 
     public UpdateModelResponse Update(UpdateModelRequest request)
     {
-        throw new NotImplementedException();
+        Model? modelToUpdate = _modelDal.Get(predicate: model => model.Id == request.Id); // 0x123123
+        _modelBusinessRules.CheckIfModelExists(modelToUpdate);
+        _modelBusinessRules.CheckIfModelYearShouldBeInLast20Years(request.Year);
+
+        //modelToUpdate = _mapper.Map<Model>(request); // 0x333123
+        /* Bunu kullanmayacağız çünkü bizim için yeni bir nesne (referans) oluşturuyor.
+        Ve ayrıca entity sınıfında olup da request sınıfında olmayan alanlar (örn. CreatedAt vb.) varsayılan değerler alacak,
+        böylece yanlış bir veri güncellemesi yapmış oluruz. */
+        modelToUpdate = _mapper.Map(request, modelToUpdate); // 0x123123
+        Model updatedModel = _modelDal.Update(modelToUpdate!); // 0x123123
+
+        var response = _mapper.Map<UpdateModelResponse>(
+            updatedModel // 0x123123
+        );
+        return response;
     }
 }

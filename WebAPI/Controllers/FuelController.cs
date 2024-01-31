@@ -1,6 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Requests.Fuel;
 using Business.Responses.Fuel;
+using Business.Responses.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -21,7 +22,7 @@ public class FuelController : ControllerBase
         return fuelList; 
     }
     [HttpGet("{id}")]
-    public GetByIDFuelResponse getById(int id)
+    public GetByIDFuelResponse GetById(int id)
     {
         GetByIDFuelResponse response = _fuelService.GetById(id);
         return response;
@@ -32,19 +33,29 @@ public class FuelController : ControllerBase
     public ActionResult<AddFuelResponse> Add(AddFuelRequest request)
     {
         AddFuelResponse response = _fuelService.Add(request);
+        return CreatedAtAction( // 201 Created
+            actionName: nameof(GetById),
+            routeValues: new { Id = response.Id }, // Anonymous object
+                                                   // Response Header: Location=http://localhost:5245/api/models/1
 
-        return CreatedAtAction(nameof(GetList), response);
+            value: response // Response Body: JSON
+        );
     }
     //[HttpDelete("{id}")]
-    [HttpDelete]
-    public void Delete(DeleteFuelRequest request) {
-        _fuelService.Delete(request);
-    }
-    [HttpPut]
-   public UpdateFuelResponse Update(UpdateFuelRequest request)
+    [HttpDelete("{Id}")]
+    public DeleteFuelResponse Delete(DeleteFuelRequest request)
     {
-        UpdateFuelResponse response =_fuelService.Update(request);
+        DeleteFuelResponse response = _fuelService.Delete(request);
         return response;
+    }
+    [HttpPut("{Id}")]
+   public ActionResult<UpdateFuelResponse>  Update([FromBody]UpdateFuelRequest request, [FromRoute]int Id)
+    {
+        if (Id != request.Id)
+            return BadRequest();
+
+        UpdateFuelResponse response = _fuelService.Update(request);
+        return Ok(response);
     }
 
 }

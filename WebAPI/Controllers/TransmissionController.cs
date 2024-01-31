@@ -16,7 +16,6 @@ public class TransmissionController : ControllerBase
     }
 
     [HttpGet] // GET http://localhost:5245/api/transmission
-    [ActionName("GetList")]
     public GetTransmissionListResponse GetList([FromQuery] GetTransmissionListRequest request)
     {
         GetTransmissionListResponse transmissionList = _transmissionService.GetList(request);
@@ -26,30 +25,39 @@ public class TransmissionController : ControllerBase
 
     //[HttpPost("/add")] // POST http://localhost:5245/api/transmission/add
     [HttpPost] // POST http://localhost:5245/api/transmission/Add
-    [ActionName("Add")]
     public ActionResult<AddTransmissionResponse> Add(AddTransmissionRequest request)
     {
         AddTransmissionResponse response = _transmissionService.Add(request);
+        return CreatedAtAction( // 201 Created
+            actionName: nameof(GetById),
+            routeValues: new { Id = response.Id }, // Anonymous object
+                                                   // Response Header: Location=http://localhost:5245/api/models/1
 
-        return CreatedAtAction(nameof(GetList), response);
+            value: response // Response Body: JSON
+        );
     }
 
-    [HttpGet("{id:int}")]
-    public GetByIDTransmissionResponse getById(int id)
+    [HttpGet("{Id}")]
+    public GetByIDTransmissionResponse GetById(GetByIDTransmissionRequest request)
     {
-        GetByIDTransmissionResponse response = _transmissionService.GetById(id);
+        GetByIDTransmissionResponse response = _transmissionService.GetById(request);
         return response;
     }
 
     //[HttpDelete("{id}")]
-    [HttpDelete]
-    public void Delete(DeleteTransmissionRequest request)
+    [HttpDelete("{Id}")]
+    public DeleteTransmissionResponse Delete(DeleteTransmissionRequest request)
     {
-        _transmissionService.Delete(request);
+        DeleteTransmissionResponse response = _transmissionService.Delete(request);
+        return response;
     }
-    [HttpPut]
-    public void Update(UpdateTransmissionRequest request)
+    [HttpPut("{Id}")]
+    public ActionResult< UpdateTransmissionResponse> Update([FromBody]UpdateTransmissionRequest request, [FromRoute] int Id)
     {
-        _transmissionService.Update(request);
+        if (Id != request.Id)
+            return BadRequest();
+
+        UpdateTransmissionResponse response = _transmissionService.Update(request);
+        return Ok(response);
     }
 }

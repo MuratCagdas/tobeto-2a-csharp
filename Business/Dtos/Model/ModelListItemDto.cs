@@ -10,5 +10,6 @@ public class ModelListItemDto
     public int TransmissionId { get; set; }
     public string TransmissionName { get; set; }
     public string Name { get; set; }
+    public short Year { get; set; }
     public decimal DailyPrice { get; set; }
 }

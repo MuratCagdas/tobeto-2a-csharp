@@ -1,8 +1,6 @@
 ﻿
 using DataAccess.Abstract;
 using Entities.Concrete;
-using System.Linq;
-
 namespace Business.BusinessRules;
 
 public class CarBusinessRules

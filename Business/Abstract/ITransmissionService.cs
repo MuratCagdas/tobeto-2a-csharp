@@ -6,7 +6,6 @@ namespace Business.Abstract;
 public interface ITransmissionService
 {
     public AddTransmissionResponse Add(AddTransmissionRequest request);
-
     public GetTransmissionListResponse GetList(GetTransmissionListRequest request);
     public GetByIDTransmissionResponse GetById(GetByIDTransmissionRequest id);
     public DeleteTransmissionResponse Delete(DeleteTransmissionRequest request);

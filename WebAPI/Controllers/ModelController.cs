@@ -17,13 +17,13 @@ public class ModelController : ControllerBase
     [HttpGet] // GET http://localhost:5245/api/fuel
     public GetModelListResponse GetList([FromQuery] GetModelListRequest request)
     {
-        GetModelListResponse fuelList = _modelService.GetList(request);
-        return fuelList;
+        GetModelListResponse response = _modelService.GetList(request);
+        return response;
     }
-    [HttpGet("{id}")]
-    public GetByIDModelResponse getById(GetModelByIdRequest id)
+    [HttpGet("{Id}")]
+    public GetByIDModelResponse GetById(GetModelByIdRequest request)
     {
-        GetByIDModelResponse response = _modelService.GetById(id);
+        GetByIDModelResponse response = _modelService.GetById(request);
         return response;
     }
 
@@ -32,20 +32,31 @@ public class ModelController : ControllerBase
     public ActionResult<AddModelResponse> Add(AddModelRequest request)
     {
         AddModelResponse response = _modelService.Add(request);
+        return CreatedAtAction( // 201 Created
+            actionName: nameof(GetById),
+            routeValues: new { Id = response.Id }, // Anonymous object
+                                                   // Response Header: Location=http://localhost:5245/api/models/1
 
-        return CreatedAtAction(nameof(GetList), response);
+            value: response // Response Body: JSON
+        );
     }
-    //[HttpDelete("{id}")]
-    [HttpDelete]
-    public DeleteModelResponse Delete(DeletModelRequest request)
+    [HttpPut("{Id}")] // PUT http://localhost:5245/api/models/1
+    public ActionResult<UpdateModelResponse> Update(
+        [FromRoute] int Id,
+        [FromBody] UpdateModelRequest request
+    )
+    {
+        if (Id != request.Id)
+            return BadRequest();
+
+        UpdateModelResponse response = _modelService.Update(request);
+        return Ok(response);
+    }
+
+    [HttpDelete("{Id}")] // DELETE http://localhost:5245/api/models/1
+    public DeleteModelResponse Delete([FromRoute] DeletModelRequest request)
     {
         DeleteModelResponse response = _modelService.Delete(request);
-        return response;
-    }
-    [HttpPut]
-    public UpdateModelResponse Update(UpdateModelRequest request)
-    {
-        UpdateModelResponse response = _modelService.Update(request);
         return response;
     }
 }

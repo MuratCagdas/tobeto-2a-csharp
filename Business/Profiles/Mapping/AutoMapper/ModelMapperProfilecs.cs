@@ -1,7 +1,5 @@
 ﻿
-using Business.Dtos.Fuel;
 using Business.Dtos.Model;
-using Business.Requests.Fuel;
 using AutoMapper;
 using Business.Requests.Model;
 using Business.Responses.Model;
@@ -21,35 +19,26 @@ public class ModelMapperProfilecs:Profile
     public void addModel()
     {
         CreateMap<AddModelRequest, Model>();
-
-        CreateMap<Model, ModelListItemDto>();
-        CreateMap<IList<Model>, GetModelListResponse>()
-            .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src));
+        CreateMap<Model, AddModelResponse>();
     }
     public void getModel()
     {
         //Get By Id
-        CreateMap<GetByIDModelResponse, Model>();
-        CreateMap<Fuel, GetByIDModelResponse>();
+        CreateMap<GetModelByIdRequest, Model>();
+        CreateMap<Model, GetByIDModelResponse>();
         // Get List
-        CreateMap<Fuel, ModelListItemDto>();
-        CreateMap<Fuel, GetModelListResponse>()
-            .ForMember(
-            destinationMember: dest => dest.Items,
-            memberOptions: opt => opt.MapFrom(mapExpression: src => src));
+        CreateMap<Model, ModelListItemDto>();
+        CreateMap<IList<Model>, GetModelListResponse>()
+            .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src));
     }
     public void deleteModel()
     {
-        CreateMap<DeleteFuelRequest, Fuel>();
+        CreateMap<Model, DeleteModelResponse>();
     }
     public void updateModel()
     {
-        CreateMap<UpdateFuelRequest, Fuel>();
+        CreateMap<UpdateModelRequest, Model>();
 
-        CreateMap<Fuel, FuelUpdateDto>().ReverseMap();
-        CreateMap<FuelUpdateDto, UpdateModelResponse>()
-            .ForMember(
-            destinationMember: dest => dest.UpdatedAt,
-            memberOptions: opt => opt.MapFrom(mapExpression: src => src));
+        CreateMap<Model, UpdateModelResponse>();
     }
 }

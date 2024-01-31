@@ -9,6 +9,6 @@ public class CarRequestValidator : AbstractValidator<AddCarRequest>
 {
     public CarRequestValidator()
     {
-        RuleFor(a => a.ModelYear).GreaterThan(DateTime.Now.Year - 20);
+        //RuleFor(a => a.ModelYear).GreaterThan(DateTime.Now.Year - 20);
     }
 }

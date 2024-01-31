@@ -8,7 +8,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 
-builder.Services.AddBusinessServices();
+builder.Services.AddBusinessServices(builder.Configuration);
 
 
 
@@ -19,6 +19,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -27,6 +28,7 @@ if (app.Environment.IsDevelopment())
 }
 
 //Middleware Exception
+//if (app.Environment.IsProduction())
 app.UseGlobalExceptionHandling();
 
 

@@ -1,6 +1,5 @@
-﻿namespace Business
+﻿namespace Business.Responses.Fuel;
+
+public class DeleteFuelResponse
 {
-    public class DeleteFuelResponse
-    {
-    }
 }
