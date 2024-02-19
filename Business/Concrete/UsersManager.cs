@@ -1,10 +1,14 @@
 ﻿
-
+using Core.Utilities.Security.Hashing;
 using AutoMapper;
 using Business.Abstract;
 using Business.BusinessRules;
 using Business.Requests.Users;
+using Core.Utilities.Security.Hashing;
+using Core.Utilities.Security.JWT;
 using Business.Responses.Users;
+using Core.Entities;
+using Core.Utilities.Security.Hashing;
 using DataAccess.Abstract;
 using Entities.Concrete;
 
@@ -12,67 +16,38 @@ namespace Business.Concrete;
 
 public class UsersManager : IUsersService
 {
-    private readonly IUsersDal _usersDal;
-    private readonly UsersBusinessRules _usersBusinessRules;
-    private readonly IMapper _mapper;
-
-    public UsersManager(IUsersDal usersDal, UsersBusinessRules usersBusinessRules, IMapper mapper)
+    private readonly IUsersDal _userDal;
+    private readonly ITokenHelper _tokenHelper;
+    public UsersManager(IUsersDal userDal, ITokenHelper tokenHelper)
     {
-        _usersDal = usersDal;
-        _usersBusinessRules = usersBusinessRules;
-        _mapper = mapper;
-    }
-    public AddUsersResponse Add(AddUsersRequest request)
-    {
-        // mapping
-        var usersToAdd = _mapper.Map<Users>(request);
-
-        // data operations
-        Users updatedUsers = _usersDal.Add(usersToAdd);
-
-        // mapping & response
-        var response = _mapper.Map<AddUsersResponse>(updatedUsers);
-        return response;
+        _userDal = userDal;
+        _tokenHelper = tokenHelper;
     }
 
-    public DeleteUsersResponse Delete(DeleteUsersRequest request)
+    public AccessToken Login(LoginRequest request)
     {
-        Users? usersToDelete = _usersDal.Get(predicate: model => model.Id == request.Id);
-        //_modelBusinessRules.CheckIfModelExists(modelToDelete); 
+        user? user = _userDal.Get(i => i.Email == request.Email);
+        // Business Rules...
 
-        Users deletedUsers = _usersDal.Delete(usersToDelete!); 
+        bool isPasswordCorrect = HashingHelper.VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt);
 
-        var response = _mapper.Map<DeleteUsersResponse>(
-            deletedUsers
-        );
-        return response;
+        if (!isPasswordCorrect)
+            throw new Exception("Şifre yanlış.");
+        return _tokenHelper.CreateToken(user);
     }
 
-    public GetByIdUsersResponse GetById(GetUsersByIdRequest request)
+    public void Register(RegisterRequest request)
     {
-        Users? users = _usersDal.Get(predicate: model => model.Id == request.Id);
-        //_modelBusinessRules.CheckIfModelExists(model);
+        byte[] passwordSalt, passwordHash;
+        HashingHelper.CreatePasswordHash(request.Password, out passwordHash, out passwordSalt);
 
-        var response = _mapper.Map<GetByIdUsersResponse>(users);
-        return response;
-    }
+        // TODO: Auto-Mapping
+        user user = new user();
+        user.Email = request.Email;
+        user.Approved = false;
+        user.PasswordSalt = passwordSalt;
+        user.PasswordHash = passwordHash;
 
-    public GetUsersListResponse GetList(GetUsersListRequest request)
-    {
-        IList<Users> brandList = _usersDal.GetList();
-        GetUsersListResponse response = _mapper.Map<GetUsersListResponse>(brandList);
-        return response;
-    }
-
-    public UpdateUsersResponse Update(UpdateUsersRequest request)
-    {
-        Users? usersToUpdate = _usersDal.Get(predicate: user => user.Id == request.Id); 
-        usersToUpdate = _mapper.Map(request, usersToUpdate); 
-        Users updatedUsers = _usersDal.Update(usersToUpdate!); 
-
-        var response = _mapper.Map<UpdateUsersResponse>(
-            updatedUsers 
-        );
-        return response;
+        _userDal.Add(user);
     }
 }

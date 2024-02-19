@@ -10,7 +10,8 @@ namespace Business.Concrete;
 
 public class BrandManager : IBrandService
 {
-    private readonly IBrandDal _brandDal;
+    private readonly IBrandDal _brandDal; //Bir entity Service'i kendi entity dışında başka bir entity enjekte etmemelidir.
+                                          //Bir servis başka bir entitye daima servis ile erişir.
     private readonly BrandBusinessRules _brandBusinessRules;
     private readonly IMapper _mapper;
 
@@ -51,5 +52,9 @@ public class BrandManager : IBrandService
         IList<Brand> brandList = _brandDal.GetList();
         GetBrandListResponse response = _mapper.Map<GetBrandListResponse>(brandList);
         return response;
+    }
+    public Brand? GetById(int id)
+    {
+        return _brandDal.Get(i => i.Id == id);
     }
 }

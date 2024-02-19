@@ -4,7 +4,8 @@ using Business.Responses.CorporateCustomer;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
-
+[Route("api/[controller]/[Action]")]
+[ApiController]
 public class CoprporateController : Controller
 {
     private readonly ICorporateCustomerService _CorporateCustomerService;

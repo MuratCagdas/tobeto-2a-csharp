@@ -21,7 +21,7 @@ public static class ServiceCollectionBusinessExtension
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
         //Brand
-        services.AddScoped<IBrandDal, InMemoryBrandDal>();
+        services.AddScoped<IBrandDal, EfBrandDal>();
         services.AddScoped<IBrandService, BrandManager>();
         services.AddScoped<BrandBusinessRules>();
         //reflection yöntemiyle Profile class'ını kalıtım alan tüm class'ları bulur ve automapleme yapar.

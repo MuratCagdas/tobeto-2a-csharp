@@ -1,13 +1,11 @@
 ﻿using Business.Requests.Users;
 using Business.Responses.Users;
+using Core.Utilities.Security.JWT;
 
 namespace Business.Abstract;
 
 public interface IUsersService
 {
-    public AddUsersResponse Add(AddUsersRequest request);
-    public GetUsersListResponse GetList(GetUsersListRequest request);
-    public GetByIdUsersResponse GetById(GetUsersByIdRequest id);
-    public DeleteUsersResponse Delete(DeleteUsersRequest request);
-    public UpdateUsersResponse Update(UpdateUsersRequest request);
+    void Register(RegisterRequest request);
+    AccessToken Login(LoginRequest request); //TODO: return type: JWT 
 }

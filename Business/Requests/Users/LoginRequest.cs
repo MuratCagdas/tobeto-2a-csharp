@@ -1,7 +1,8 @@
 ﻿
+
 namespace Business.Requests.Users;
 
-public class AddUsersRequest
+public  class LoginRequest
 {
     public string Email { get; set; }
     public string Password { get; set; }

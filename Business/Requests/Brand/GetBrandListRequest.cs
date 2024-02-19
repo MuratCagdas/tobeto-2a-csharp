@@ -1,6 +1,6 @@
-﻿namespace Business
+﻿namespace Business;
+
+public class GetBrandListRequest
 {
-    public class GetBrandListRequest
-    {
-    }
+    public int Id { get; set; }
 }

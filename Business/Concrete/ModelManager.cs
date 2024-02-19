@@ -33,6 +33,7 @@ public class ModelManager : IModelService
         // business rules
         _modelBusinessRules.CheckIfModelNameExists(request.Name);
         _modelBusinessRules.CheckIfModelYearShouldBeInLast20Years(request.Year);
+        _modelBusinessRules.CheckIfBrandExists(request.BrandId);
 
         // mapping
         var modelToAdd = _mapper.Map<Model>(request);

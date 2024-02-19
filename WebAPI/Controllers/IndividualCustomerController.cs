@@ -4,7 +4,8 @@ using Business.Responses.IndividualCustomer;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
-
+[Route("api/[controller]/[Action]")]
+[ApiController]
 public class IndividualCustomerController : Controller
 {
     private readonly IindividualCustomerService _indvService;
