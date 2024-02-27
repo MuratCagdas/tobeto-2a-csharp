@@ -5,6 +5,7 @@ using Business.Requests.Brand;
 using Business.Responses.Brand;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Microsoft.AspNetCore.Http;
 
 namespace Business.Concrete;
 
@@ -14,16 +15,23 @@ public class BrandManager : IBrandService
                                           //Bir servis başka bir entitye daima servis ile erişir.
     private readonly BrandBusinessRules _brandBusinessRules;
     private readonly IMapper _mapper;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public BrandManager(IBrandDal brandDal, BrandBusinessRules brandBusinessRules, IMapper mapper)
+    public BrandManager(IBrandDal brandDal, BrandBusinessRules brandBusinessRules, IMapper mapper, IHttpContextAccessor httpContextAccessor)
     {
         _brandDal = brandDal; //new InMemoryBrandDal(); // Başka katmanların class'ları new'lenmez. Bu yüzden dependency injection kullanıyoruz.
         _brandBusinessRules = brandBusinessRules;
         _mapper = mapper;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public AddBrandResponse Add(AddBrandRequest request)
     {
+        // BrandAdmin
+        if (!_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+        {
+            throw new Exception("Bu endpointi çalıştırmak için giriş yapmak zorundasınız!");
+        }
         // İş Kuralları
         _brandBusinessRules.CheckIfBrandNameNotExists(request.Name);
 

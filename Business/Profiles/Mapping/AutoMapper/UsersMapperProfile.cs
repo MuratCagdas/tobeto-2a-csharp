@@ -2,7 +2,7 @@
 using Business.Dtos.Model;
 using Business.Requests.Users;
 using Business.Responses.Users;
-using Entities.Concrete;
+using Core.Entities;
 
 
 namespace Business.Profiles.Mapping.AutoMapper;
@@ -18,14 +18,14 @@ public class UsersMapperProfile :Profile
     }
     public void addModel()
     {
-        CreateMap<AddUsersRequest, Users>();
-        CreateMap<Users, AddUsersResponse>();
+        CreateMap<AddUsersRequest, User>();
+        CreateMap<User, AddUsersResponse>();
     }
     public void getModel()
     {
         //Get By Id
-        CreateMap<GetUsersByIdRequest, Users>();
-        CreateMap<Users, GetByIdUsersResponse>();
+        CreateMap<GetUsersByIdRequest, User>();
+        CreateMap<User, GetByIdUsersResponse>();
         // Get List
         //CreateMap<Model, ModelListItemDto>();
         //CreateMap<IList<Model>, GetModelListResponse>()
@@ -33,12 +33,12 @@ public class UsersMapperProfile :Profile
     }
     public void deleteModel()
     {
-        CreateMap<Users, DeleteUsersResponse>();
+        CreateMap<User, DeleteUsersResponse>();
     }
     public void updateModel()
     {
-        CreateMap<UpdateUsersRequest, Users>();
+        CreateMap<UpdateUsersRequest, User>();
 
-        CreateMap<Users, UpdateUsersResponse>();
+        CreateMap<User, UpdateUsersResponse>();
     }
 }

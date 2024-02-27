@@ -2,10 +2,10 @@
 using Business.Abstract;
 using Business.BusinessRules;
 using Business.Concrete;
+using Core.Utilities.Security.JWT;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using DataAccess.Concrete.EntityFramework.Contexts;
-using DataAccess.Concrete.InMemory;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +19,8 @@ public static class ServiceCollectionBusinessExtension
     public static IServiceCollection AddBusinessServices(this IServiceCollection services,IConfiguration configuration)
     {
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+        services.AddScoped<ITokenHelper, JwtTokenHelper>();
 
         //Brand
         services.AddScoped<IBrandDal, EfBrandDal>();
@@ -53,6 +55,10 @@ public static class ServiceCollectionBusinessExtension
         services.AddScoped<IUsersService, UsersManager>();
         services.AddScoped<UsersBusinessRules>();
 
+        //Role
+        services.AddScoped<IRoleDal, EfRoleDal>();
+        services.AddScoped<IRoleService, RoleManager>();
+
         //Customers
         services.AddScoped<ICustomersDal, EfCustomersDal>();
         services.AddScoped<ICustomersService, CustomersManager>();
@@ -67,6 +73,8 @@ public static class ServiceCollectionBusinessExtension
         services.AddScoped<ICorporateCustomerDal, EfCorporateCustomerDal>();
         services.AddScoped<ICorporateCustomerService, CorporateCustomerManager>();
         services.AddScoped<CorpCustBusinessRules>();
+
+
 
         services.AddDbContext<RentACarContext>(options => options.UseSqlServer(configuration.GetConnectionString("RentACarMSSQL22")));
         return services;

@@ -2,38 +2,36 @@
 using Core.Utilities.Security.Hashing;
 using AutoMapper;
 using Business.Abstract;
-using Business.BusinessRules;
 using Business.Requests.Users;
-using Core.Utilities.Security.Hashing;
 using Core.Utilities.Security.JWT;
-using Business.Responses.Users;
 using Core.Entities;
-using Core.Utilities.Security.Hashing;
 using DataAccess.Abstract;
-using Entities.Concrete;
-
+using Business.BusinessRules;
 namespace Business.Concrete;
 
 public class UsersManager : IUsersService
 {
     private readonly IUsersDal _userDal;
     private readonly ITokenHelper _tokenHelper;
-    public UsersManager(IUsersDal userDal, ITokenHelper tokenHelper)
+    private readonly UsersBusinessRules _usersBusinessRules;
+    public UsersManager(IUsersDal userDal, ITokenHelper tokenHelper, UsersBusinessRules usersBusinessRules)
     {
         _userDal = userDal;
         _tokenHelper = tokenHelper;
+        _usersBusinessRules = usersBusinessRules;
     }
 
     public AccessToken Login(LoginRequest request)
     {
-        user? user = _userDal.Get(i => i.Email == request.Email);
+        User? user = _userDal.Get(i => i.Email == request.Email);
+        ICollection<Role> roles = _usersBusinessRules.Roles(user);
         // Business Rules...
 
         bool isPasswordCorrect = HashingHelper.VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt);
 
         if (!isPasswordCorrect)
             throw new Exception("Şifre yanlış.");
-        return _tokenHelper.CreateToken(user);
+        return _tokenHelper.CreateToken(user/*,roles*/);
     }
 
     public void Register(RegisterRequest request)
@@ -42,7 +40,7 @@ public class UsersManager : IUsersService
         HashingHelper.CreatePasswordHash(request.Password, out passwordHash, out passwordSalt);
 
         // TODO: Auto-Mapping
-        user user = new user();
+        User user = new User();
         user.Email = request.Email;
         user.Approved = false;
         user.PasswordSalt = passwordSalt;
